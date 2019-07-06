@@ -7,7 +7,10 @@ import domain.entities.AccountData;
 public interface AccountService {
 
     Account get(AccountId accountId);
-    void update(AccountData accountData);
+
+    void update(AccountId accountId, AccountData accountData);
+
     Account create(AccountData accountData);
+
     void delete(AccountId accountId);
 }

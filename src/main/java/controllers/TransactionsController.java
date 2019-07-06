@@ -3,6 +3,7 @@ package controllers;
 import domain.abstractions.TransactionService;
 import domain.dataTypes.AccountId;
 import domain.dataTypes.TransactionId;
+import domain.entities.TransactionData;
 import response.Response;
 
 import static response.Response.SuccessResponse;
@@ -20,5 +21,9 @@ public class TransactionsController {
 
     public Response getTransaction(String transactionId) {
         return SuccessResponse(transactionService.get(TransactionId.Of(transactionId)));
+    }
+
+    public Response createTransaction(TransactionData transactionData) {
+        return SuccessResponse(transactionService.create(transactionData));
     }
 }
