@@ -2,13 +2,13 @@ import static spark.Spark.get;
 
 public class MainEndpoint {
 
+    private static Context context = Context.New();
+
     public static void main(String[] args) {
-        buildServices();
+
 
         get("/TestConnection", (req, res) -> "Up and running");
     }
 
-    private static void buildServices(){
 
-    }
 }
