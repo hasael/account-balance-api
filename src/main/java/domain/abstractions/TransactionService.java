@@ -11,5 +11,5 @@ public interface TransactionService {
 
     Transaction get(TransactionId transactionId);
     Transaction create(TransactionData transactionData);
-    List<Transaction> getAccountTransactions(AccountId accountId);
+    List<Transaction> getAccountTransactions(AccountId accountId, int count);
 }
