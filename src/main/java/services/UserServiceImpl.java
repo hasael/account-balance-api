@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class UserServiceImpl implements UserService {
+
     @Override
     public void addUser(User user) {
 
@@ -15,7 +16,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Collection<User> getUsers() {
         ArrayList<User> list = new ArrayList<>();
-       // list.add(new User());
         list.add(new User("id1","username","lastname","email"));
         return list;
     }
