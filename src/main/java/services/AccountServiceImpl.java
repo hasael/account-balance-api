@@ -49,6 +49,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private AccountDto dtoFromAccountData(AccountData accountData) {
+        //TODO: Do not reset amount here
         return new AccountDto(UUID.Of(""),accountData.getName().value(), accountData.getLastName().value(), accountData.getAddress().value(), new AmountDto(0, ""));
     }
 }

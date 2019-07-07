@@ -14,4 +14,8 @@ public class AmountDto {
     public static AmountDto empty() {
         return new AmountDto(0, "");
     }
+
+    public static AmountDto Of(double moneyAmount,String currency){
+        return new AmountDto(moneyAmount,currency);
+    }
 }

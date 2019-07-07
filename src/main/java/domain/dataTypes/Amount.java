@@ -12,15 +12,19 @@ public class Amount {
         this.currency = currency;
     }
 
-    public static Amount Of(Double amount, Currency currency){
-        return new Amount(amount,currency);
+    public static Amount Of(Double amount, Currency currency) {
+        return new Amount(amount, currency);
     }
 
-    public Double amountValue(){
+    public Double amountValue() {
         return amount;
     }
 
-    public Currency currency(){
+    public Currency currency() {
         return currency;
+    }
+
+    public Amount withNegativeAmount() {
+        return new Amount(-amount, currency);
     }
 }

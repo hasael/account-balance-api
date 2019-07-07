@@ -18,4 +18,9 @@ public class UUID {
     public String value(){
         return uuid;
     }
+
+    //TODO: there should be no need of these
+    public static UUID empty(){
+        return  Of("");
+    }
 }

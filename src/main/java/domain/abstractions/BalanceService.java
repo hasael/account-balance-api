@@ -2,7 +2,10 @@ package domain.abstractions;
 
 import domain.dataTypes.AccountId;
 import domain.dataTypes.Amount;
+import domain.entities.Account;
+
+import java.util.Optional;
 
 public interface BalanceService {
-    Amount UpdateAccountBalance(AccountId accountId,Amount amount);
+    Optional<Account> updateAccountBalance(AccountId accountId, Amount amount);
 }

@@ -12,9 +12,11 @@ import java.util.stream.Collectors;
 public class Dao<T extends BaseDto> {
 
     private final HashMap<UUID, T> data;
+    private final UIDGenerator uidGenerator;
 
-    public Dao(HashMap<UUID, T> data) {
+    public Dao(HashMap<UUID, T> data, UIDGenerator uidGenerator) {
         this.data = data;
+        this.uidGenerator = uidGenerator;
     }
 
     public Optional<T> read(UUID uuid) {
@@ -23,7 +25,7 @@ public class Dao<T extends BaseDto> {
     }
 
     public T create(T value) {
-        data.put(value.getId(), value);
+        data.put(uidGenerator.generateId(), value);
         return value;
     }
 
