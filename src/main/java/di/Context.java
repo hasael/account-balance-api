@@ -1,7 +1,11 @@
+package di;
+
 import controllers.AccountController;
 import controllers.TransactionsController;
 import domain.abstractions.AccountService;
 import domain.abstractions.TransactionService;
+import services.AccountServiceImpl;
+import services.TransactionServiceImpl;
 
 public class Context {
 
@@ -21,7 +25,10 @@ public class Context {
     }
 
     private Context() {
-
+        accountService = new AccountServiceImpl();
+        transactionService = new TransactionServiceImpl();
+        accountController = new AccountController(accountService);
+        transactionsController = new TransactionsController(transactionService);
     }
 
     public AccountController accountController() {
@@ -32,4 +39,11 @@ public class Context {
         return transactionsController;
     }
 
+    public AccountService accountService() {
+        return accountService;
+    }
+
+    public TransactionService transactionService() {
+        return transactionService;
+    }
 }

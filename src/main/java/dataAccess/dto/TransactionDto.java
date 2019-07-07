@@ -8,7 +8,7 @@ import java.util.Date;
 
 @AllArgsConstructor
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public class TransactionDto extends BaseDto {
 
     private final UUID sender;
