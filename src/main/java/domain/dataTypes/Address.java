@@ -1,5 +1,8 @@
 package domain.dataTypes;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
 public class Address {
     private final String address;
 
@@ -9,5 +12,9 @@ public class Address {
 
     public static Address Of(String address){
         return new Address(address);
+    }
+
+    public String value(){
+        return address;
     }
 }

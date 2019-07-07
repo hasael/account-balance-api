@@ -1,5 +1,8 @@
 package domain.dataTypes;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
 public class Amount {
     private final Double amount;
     private final Currency currency;
@@ -11,5 +14,13 @@ public class Amount {
 
     public static Amount Of(Double amount, Currency currency){
         return new Amount(amount,currency);
+    }
+
+    public Double amountValue(){
+        return amount;
+    }
+
+    public Currency currency(){
+        return currency;
     }
 }

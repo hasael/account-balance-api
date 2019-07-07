@@ -6,10 +6,11 @@ import domain.entities.Transaction;
 import domain.entities.TransactionData;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TransactionService {
 
-    Transaction get(TransactionId transactionId);
+    Optional<Transaction> get(TransactionId transactionId);
     Transaction create(TransactionData transactionData);
     List<Transaction> getAccountTransactions(AccountId accountId, int count);
 }

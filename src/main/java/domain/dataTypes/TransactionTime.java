@@ -9,7 +9,11 @@ public class TransactionTime {
         this.time = time;
     }
 
-    public static TransactionTime Of(Date time){
+    public static TransactionTime Of(Date time) {
         return new TransactionTime(time);
+    }
+
+    public Date value() {
+        return time;
     }
 }

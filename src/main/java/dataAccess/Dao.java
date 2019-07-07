@@ -9,11 +9,11 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public abstract class Dao<T extends BaseDto> {
+public class Dao<T extends BaseDto> {
 
     private final HashMap<UUID, T> data;
 
-    protected Dao(HashMap<UUID, T> data) {
+    public Dao(HashMap<UUID, T> data) {
         this.data = data;
     }
 

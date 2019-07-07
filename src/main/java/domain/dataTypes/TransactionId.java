@@ -1,5 +1,8 @@
 package domain.dataTypes;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
 public class TransactionId {
     private final String transactionId;
 
@@ -9,5 +12,9 @@ public class TransactionId {
 
     public static TransactionId Of(String transactionId){
         return new TransactionId(transactionId);
+    }
+
+    public String value(){
+        return transactionId;
     }
 }

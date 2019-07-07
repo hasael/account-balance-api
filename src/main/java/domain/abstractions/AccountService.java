@@ -4,13 +4,15 @@ import domain.dataTypes.AccountId;
 import domain.entities.Account;
 import domain.entities.AccountData;
 
+import java.util.Optional;
+
 public interface AccountService {
 
-    Account get(AccountId accountId);
+    Optional<Account> get(AccountId accountId);
 
-    void update(AccountId accountId, AccountData accountData);
+    Optional<Account> update(AccountId accountId, AccountData accountData);
 
     Account create(AccountData accountData);
 
-    void delete(AccountId accountId);
+    Optional<Account> delete(AccountId accountId);
 }

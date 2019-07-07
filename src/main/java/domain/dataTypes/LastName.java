@@ -1,5 +1,8 @@
 package domain.dataTypes;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
 public class LastName {
     private final String lastName;
 
@@ -9,5 +12,9 @@ public class LastName {
 
     public static LastName Of(String lastName) {
         return new LastName(lastName);
+    }
+
+    public String value(){
+        return lastName;
     }
 }

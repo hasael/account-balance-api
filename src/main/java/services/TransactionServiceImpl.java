@@ -7,10 +7,11 @@ import domain.entities.Transaction;
 import domain.entities.TransactionData;
 
 import java.util.List;
+import java.util.Optional;
 
 public class TransactionServiceImpl implements TransactionService {
     @Override
-    public Transaction get(TransactionId transactionId) {
+    public Optional<Transaction> get(TransactionId transactionId) {
         return null;
     }
 
