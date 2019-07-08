@@ -82,13 +82,18 @@ public class AccountServiceImplTests {
         Double amount = 42.0;
         String currency = "EUR";
 
-        AccountDto updateData = new AccountDto(updatedName, lastName, address, AmountDto.empty());
+        String previousName = "name";
+        String previousLastname = "plastname";
+        String previousAddress = "paddress";
 
-        AccountData accountData = new AccountData(Name.Of(updatedName), LastName.Of(lastName), Address.Of(address));
+        AccountDto previousAccount = new AccountDto(previousName, previousLastname, previousAddress, AmountDto.Of(amount, currency));
+
+        AccountDto updateData = new AccountDto(updatedName, lastName, address, AmountDto.Of(amount, currency));
         when(mockDao.update(updateData, UUID.Of(id))).thenReturn(Optional.of(new AccountDto(updatedName, lastName, address, new AmountDto(amount, currency))));
+        when(mockDao.read(UUID.Of(id))).thenReturn(Optional.of(previousAccount));
 
         //WHEN
-
+        AccountData accountData = new AccountData(Name.Of(updatedName), LastName.Of(lastName), Address.Of(address), Currency.Of(currency));
         Optional<Account> actual = sut.update(AccountId.Of("1"), accountData);
 
         //THEN
@@ -112,14 +117,15 @@ public class AccountServiceImplTests {
         String updatedName = "updatedName";
         String lastName = "lastname";
         String address = "address";
+        String currency = "EUR";
 
         AccountDto updateData = new AccountDto(updatedName, lastName, address, AmountDto.empty());
 
-        when(mockDao.update(updateData, UUID.Of(id))).thenReturn(Optional.empty());
+        when(mockDao.read(UUID.Of(id))).thenReturn(Optional.empty());
 
         //WHEN
 
-        AccountData accountData = new AccountData(Name.Of(updatedName), LastName.Of(lastName), Address.Of(address));
+        AccountData accountData = new AccountData(Name.Of(updatedName), LastName.Of(lastName), Address.Of(address), Currency.Of(currency));
         Optional<Account> actual = sut.update(AccountId.Of("1"), accountData);
 
         //THEN
@@ -190,13 +196,13 @@ public class AccountServiceImplTests {
         String address = "address";
         Double amount = 42.0;
         String currency = "EUR";
-        AccountDto createData = new AccountDto(updatedName, lastName, address, AmountDto.empty());
+        AccountDto createData = new AccountDto(updatedName, lastName, address, AmountDto.Of(1.0, currency));
 
         when(mockDao.create(createData)).thenReturn(Pair.of(UUID.Of("1"), new AccountDto(updatedName, lastName, address, new AmountDto(amount, currency))));
 
         //WHEN
 
-        AccountData accountData = new AccountData(Name.Of(updatedName), LastName.Of(lastName), Address.Of(address));
+        AccountData accountData = new AccountData(Name.Of(updatedName), LastName.Of(lastName), Address.Of(address), Currency.Of(currency));
 
         Account actual = sut.create(accountData);
 

@@ -27,12 +27,15 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Optional<Account> update(AccountId accountId, AccountData accountData) {
-        return accountDao.update(dtoFromAccountData(accountData), UUID.Of(accountId.value())).map(accountDto -> accountFromDto(accountId, accountDto));
+        UUID id = UUID.Of(accountId.value());
+        return accountDao.read(id)
+                .flatMap(accountDto -> accountDao.update(dtoFromAccountData(accountData, accountDto.getBalance()), id)
+                        .map(accountDto1 -> accountFromDto(accountId, accountDto1)));
     }
 
     @Override
     public Account create(AccountData accountData) {
-        Pair<UUID, AccountDto> created = accountDao.create(dtoFromAccountData(accountData));
+        Pair<UUID, AccountDto> created = accountDao.create(dtoFromAccountData(accountData, AmountDto.Of(1.0, accountData.getCurrency().value())));
         return accountFromDto(AccountId.Of(created.getLeft().value()), created.getRight());
     }
 
@@ -49,8 +52,7 @@ public class AccountServiceImpl implements AccountService {
                 Amount.Of(accountDto.getBalance().getMoneyAmount(), Currency.Of(accountDto.getBalance().getCurrency())));
     }
 
-    private AccountDto dtoFromAccountData(AccountData accountData) {
-        //TODO: Do not reset amount here
-        return new AccountDto(accountData.getName().value(), accountData.getLastName().value(), accountData.getAddress().value(), new AmountDto(0, ""));
+    private AccountDto dtoFromAccountData(AccountData accountData, AmountDto amountDto) {
+        return new AccountDto(accountData.getName().value(), accountData.getLastName().value(), accountData.getAddress().value(), amountDto);
     }
 }
