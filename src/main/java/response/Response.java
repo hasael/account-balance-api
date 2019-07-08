@@ -5,6 +5,9 @@ import com.google.gson.JsonElement;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Getter
 @EqualsAndHashCode
 public class Response {
@@ -21,11 +24,17 @@ public class Response {
         return new Response(StatusResponse.SUCCESS, toJson(data));
     }
 
+    public static Response InfoResponse(String message) {
+        Map<String, Object> jsonMap = new HashMap<>();
+        jsonMap.put("message", message);
+        return new Response(StatusResponse.SUCCESS, toJson(jsonMap));
+    }
+
     private static JsonElement toJson(Object obj) {
         return new Gson().toJsonTree(obj);
     }
 
-    public JsonElement toJson(){
+    public JsonElement toJson() {
         return new Gson().toJsonTree(this);
     }
 }

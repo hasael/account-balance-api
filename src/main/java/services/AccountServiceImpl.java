@@ -53,6 +53,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private AccountDto dtoFromAccountData(AccountData accountData, AmountDto amountDto) {
-        return new AccountDto(accountData.getName().value(), accountData.getLastName().value(), accountData.getAddress().value(), amountDto);
+        return new AccountDto(accountData.getName().value(), accountData.getLastName().value(), accountData.getAddress().value(), AmountDto.Of(amountDto.getMoneyAmount(), accountData.getCurrency().value()));
     }
 }
