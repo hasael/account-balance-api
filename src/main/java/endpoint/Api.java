@@ -7,6 +7,7 @@ import domain.entities.AccountData;
 import domain.entities.TransactionData;
 import endpoint.exceptions.ApiError;
 import endpoint.json.AccountDataJson;
+import endpoint.json.AmountJson;
 import endpoint.json.TransactionDataJson;
 
 import java.util.HashMap;
@@ -33,6 +34,16 @@ public class Api {
                 try {
                     AccountDataJson accountDataJson = gson.fromJson(req.body(), AccountDataJson.class);
                     return context.accountController().updateAccount(req.params(":id"), fromJson(accountDataJson)).toJson();
+                } catch (Exception ex) {
+                    throw new ApiError(500, ex.getMessage());
+                }
+            });
+
+            post("/AccountBalance/:id", (req, res) ->
+            {
+                try {
+                    AmountJson amountJson = gson.fromJson(req.body(), AmountJson.class);
+                    return context.accountController().addBalance(req.params(":id"), fromJson(amountJson)).toJson();
                 } catch (Exception ex) {
                     throw new ApiError(500, ex.getMessage());
                 }
@@ -81,5 +92,9 @@ public class Api {
 
     private static TransactionData fromJson(TransactionDataJson transactionDataJson) {
         return new TransactionData(AccountId.Of(transactionDataJson.getSender()), AccountId.Of(transactionDataJson.getReceiver()), Amount.Of(transactionDataJson.getAmount().getValue(), Currency.Of(transactionDataJson.getAmount().getCurrency())));
+    }
+
+    private static Amount fromJson(AmountJson amountJson) {
+        return Amount.Of(amountJson.getValue(), Currency.Of(amountJson.getCurrency()));
     }
 }

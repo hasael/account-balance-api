@@ -32,6 +32,17 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     @Override
+    public Optional<Account> addAccountBalance(AccountId accountId, Amount amount) {
+        UUID id = UUID.Of(accountId.value());
+        return accountDao.read(id)
+                .flatMap(accountDto ->
+                        accountDao.update(
+                                accountDto.withBalance(
+                                        add(accountDto.getBalance(), AmountDto.from(amount))), id).map(accountDto1 -> accountFromDto(accountId, accountDto1)));
+
+    }
+
+    @Override
     public boolean verifyBalance(AccountId accountId, Amount amount) {
         UUID id = UUID.Of(accountId.value());
         return accountDao.read(id).map(accountDto ->
@@ -42,6 +53,11 @@ public class BalanceServiceImpl implements BalanceService {
     private AmountDto calculateBalance(Currency newCurrency, Amount amount) {
         Amount newAmount = exchangeService.exchangeAmount(newCurrency, amount);
         return AmountDto.Of(newAmount.amountValue(), newAmount.currency().value());
+    }
+
+    public AmountDto add(AmountDto first, AmountDto second) {
+        Amount newAmount = exchangeService.exchangeAmount(Currency.Of(first.getCurrency()), Amount.Of(second.getMoneyAmount(), Currency.Of(second.getCurrency())));
+        return new AmountDto(first.getMoneyAmount() + newAmount.amountValue(), first.getCurrency());
     }
 
     private Account accountFromDto(AccountId accountId, AccountDto accountDto) {

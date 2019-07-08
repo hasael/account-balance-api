@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface BalanceService {
     Optional<Account> updateAccountBalance(AccountId accountId, Amount amount);
     boolean verifyBalance(AccountId accountId,Amount amount);
+    Optional<Account> addAccountBalance(AccountId accountId, Amount amount);
 }

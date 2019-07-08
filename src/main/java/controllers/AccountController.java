@@ -1,10 +1,11 @@
 package controllers;
 
 import domain.abstractions.AccountService;
+import domain.abstractions.BalanceService;
 import domain.dataTypes.AccountId;
+import domain.dataTypes.Amount;
 import domain.entities.Account;
 import domain.entities.AccountData;
-import endpoint.json.AccountDataJson;
 import endpoint.json.AccountJson;
 import endpoint.json.AmountJson;
 import response.Response;
@@ -16,10 +17,12 @@ import static response.Response.SuccessResponse;
 
 public class AccountController {
     private final AccountService accountService;
+    private final BalanceService balanceService;
 
 
-    public AccountController(AccountService accountService) {
+    public AccountController(AccountService accountService, BalanceService balanceService) {
         this.accountService = accountService;
+        this.balanceService = balanceService;
     }
 
     public Response getAccount(String accountId) {
@@ -41,6 +44,11 @@ public class AccountController {
     public Response deleteAccount(String accountId) {
         accountService.delete(AccountId.Of(accountId));
         return SuccessResponse(accountId + "deleted");
+    }
+
+    public Response addBalance(String accountId, Amount amount) {
+        balanceService.addAccountBalance(AccountId.Of(accountId), amount);
+        return SuccessResponse(accountId + "balance updated");
     }
 
     private static AccountJson toJson(Account account) {

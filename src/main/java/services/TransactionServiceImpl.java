@@ -5,7 +5,6 @@ import dataAccess.dto.AmountDto;
 import dataAccess.dto.TransactionDto;
 import dataAccess.dto.UUID;
 import domain.abstractions.BalanceService;
-import domain.abstractions.ExchangeService;
 import domain.abstractions.TimeProvider;
 import domain.abstractions.TransactionService;
 import domain.dataTypes.*;

@@ -37,7 +37,7 @@ public class Context {
         TimeProvider timeProvider = new TimeProviderImpl();
         accountService = new AccountServiceImpl(accountDao);
         transactionService = new TransactionServiceImpl(transactionDao, balanceService, timeProvider);
-        accountController = new AccountController(accountService);
+        accountController = new AccountController(accountService, balanceService);
         transactionsController = new TransactionsController(transactionService);
     }
 
