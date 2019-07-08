@@ -1,7 +1,10 @@
 package domain.dataTypes;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.Date;
 
+@EqualsAndHashCode
 public class TransactionTime {
     private final Date time;
 

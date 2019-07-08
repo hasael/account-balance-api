@@ -33,10 +33,10 @@ public class Context {
         ExchangeService exchangeService = new ExchangeServiceImpl();
         Dao<AccountDto> accountDao = new Dao<>(new HashMap<>(), uidGenerator);
         Dao<TransactionDto> transactionDao = new Dao<>(new HashMap<>(), uidGenerator);
-        BalanceService balanceService = new BalanceServiceImpl(accountDao);
+        BalanceService balanceService = new BalanceServiceImpl(accountDao, exchangeService);
         TimeProvider timeProvider = new TimeProviderImpl();
         accountService = new AccountServiceImpl(accountDao);
-        transactionService = new TransactionServiceImpl(transactionDao, exchangeService, balanceService, timeProvider);
+        transactionService = new TransactionServiceImpl(transactionDao, balanceService, timeProvider);
         accountController = new AccountController(accountService);
         transactionsController = new TransactionsController(transactionService);
     }

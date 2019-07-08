@@ -13,19 +13,16 @@ import domain.entities.Transaction;
 import domain.entities.TransactionData;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 public class TransactionServiceImpl implements TransactionService {
 
-    private final ExchangeService exchangeService;
     private final BalanceService balanceService;
     private final TimeProvider timeProvider;
     private final Dao<TransactionDto> transactionDao;
 
-    public TransactionServiceImpl(Dao<TransactionDto> transactionDao, ExchangeService exchangeService, BalanceService balanceService, TimeProvider timeProvider) {
-        this.exchangeService = exchangeService;
+    public TransactionServiceImpl(Dao<TransactionDto> transactionDao, BalanceService balanceService, TimeProvider timeProvider) {
         this.balanceService = balanceService;
         this.timeProvider = timeProvider;
         this.transactionDao = transactionDao;
@@ -40,6 +37,7 @@ public class TransactionServiceImpl implements TransactionService {
     public Transaction create(TransactionData transactionData) {
         Pair<UUID, TransactionDto> created = transactionDao.create(dtoFromTransaction(transactionData));
         Transaction transaction = transactionFromDto(TransactionId.Of(created.getLeft().value()), created.getRight());
+
         balanceService.updateAccountBalance(transaction.getSender(), transaction.getAmount().withNegativeAmount())
                 .flatMap(any -> balanceService.updateAccountBalance(transaction.getReceiver(), transaction.getAmount()));
 
@@ -65,6 +63,6 @@ public class TransactionServiceImpl implements TransactionService {
         return new TransactionDto(
                 UUID.Of(transaction.getSender().value()),
                 UUID.Of(transaction.getReceiver().value()),
-                AmountDto.Of(transaction.getAmount().amountValue(), transaction.getAmount().currency().value()), new Date());
+                AmountDto.Of(transaction.getAmount().amountValue(), transaction.getAmount().currency().value()), timeProvider.now());
     }
 }
