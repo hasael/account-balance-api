@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface TransactionService {
 
     Optional<Transaction> get(TransactionId transactionId);
-    Transaction create(TransactionData transactionData);
+
+    Optional<Transaction> create(TransactionData transactionData);
+
     List<Transaction> getAccountTransactions(AccountId accountId, int count);
 }

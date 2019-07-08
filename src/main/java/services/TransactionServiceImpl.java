@@ -34,14 +34,18 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction create(TransactionData transactionData) {
-        Pair<UUID, TransactionDto> created = transactionDao.create(dtoFromTransaction(transactionData));
-        Transaction transaction = transactionFromDto(TransactionId.Of(created.getLeft().value()), created.getRight());
+    public Optional<Transaction> create(TransactionData transactionData) {
 
-        balanceService.updateAccountBalance(transaction.getSender(), transaction.getAmount().withNegativeAmount())
-                .flatMap(any -> balanceService.updateAccountBalance(transaction.getReceiver(), transaction.getAmount()));
+        if (balanceService.verifyBalance(transactionData.getSender(), transactionData.getAmount())) {
+            Pair<UUID, TransactionDto> created = transactionDao.create(dtoFromTransaction(transactionData));
+            Transaction transaction = transactionFromDto(TransactionId.Of(created.getLeft().value()), created.getRight());
 
-        return transaction;
+            balanceService.updateAccountBalance(transaction.getSender(), transaction.getAmount().withNegativeAmount())
+                    .flatMap(any -> balanceService.updateAccountBalance(transaction.getReceiver(), transaction.getAmount()));
+
+            return Optional.of(transaction);
+        } else
+            return Optional.empty();
     }
 
     @Override

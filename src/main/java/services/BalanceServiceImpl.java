@@ -31,6 +31,14 @@ public class BalanceServiceImpl implements BalanceService {
 
     }
 
+    @Override
+    public boolean verifyBalance(AccountId accountId, Amount amount) {
+        UUID id = UUID.Of(accountId.value());
+        return accountDao.read(id).map(accountDto ->
+                accountDto.getBalance().getMoneyAmount() >= calculateBalance(Currency.Of(accountDto.getBalance().getCurrency()), amount).getMoneyAmount())
+                .orElse(false);
+    }
+
     private AmountDto calculateBalance(Currency newCurrency, Amount amount) {
         Amount newAmount = exchangeService.exchangeAmount(newCurrency, amount);
         return AmountDto.Of(newAmount.amountValue(), newAmount.currency().value());

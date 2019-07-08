@@ -36,7 +36,9 @@ public class TransactionsController {
     }
 
     public Response createTransaction(TransactionData transactionData) {
-        return SuccessResponse(toJson(transactionService.create(transactionData)));
+        Optional<Transaction> data = transactionService.create(transactionData);
+        return data.map(transaction -> SuccessResponse(transaction))
+                .orElseGet(() -> InfoResponse("Could not create resource"));
     }
 
     private static TransactionJson toJson(Transaction transaction) {

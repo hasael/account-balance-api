@@ -87,20 +87,21 @@ public class TransactionServiceImplTests {
 
         when(balanceService.updateAccountBalance(AccountId.Of(senderId), Amount.Of(amount, Currency.Of(currency)).withNegativeAmount())).thenReturn(Optional.of(senderAccount));
         when(balanceService.updateAccountBalance(AccountId.Of(receiverId), Amount.Of(amount, Currency.Of(currency)))).thenReturn(Optional.of(receiverAccount));
+        when(balanceService.verifyBalance(AccountId.Of(senderId), Amount.Of(amount, Currency.Of(currency)))).thenReturn(true);
 
         when(mockDao.create(transactionDto)).thenReturn(Pair.of(UUID.Of(id), transactionDto));
 
         //WHEN
 
-        Transaction actual = sut.create(transactionData);
+        Optional<Transaction> actual = sut.create(transactionData);
 
         //THEN
 
-        Transaction expected = new Transaction(TransactionId.Of(id),
+        Optional<Transaction> expected = Optional.of(new Transaction(TransactionId.Of(id),
                 AccountId.Of(senderId),
                 AccountId.Of(receiverId),
                 Amount.Of(amount, Currency.Of(currency)),
-                TransactionTime.Of(now));
+                TransactionTime.Of(now)));
 
         verify(balanceService, times(1)).updateAccountBalance(AccountId.Of(senderId), Amount.Of(amount, Currency.Of(currency)).withNegativeAmount());
         verify(balanceService, times(1)).updateAccountBalance(AccountId.Of(receiverId), Amount.Of(amount, Currency.Of(currency)));
