@@ -1,3 +1,5 @@
+package endpoint;
+
 import com.google.gson.Gson;
 import di.Context;
 import domain.entities.AccountData;
@@ -5,7 +7,7 @@ import domain.entities.TransactionData;
 
 import static spark.Spark.*;
 
-public class MainEndpoint {
+public class Api {
 
     private static Context context = Context.New();
 
