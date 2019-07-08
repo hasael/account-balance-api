@@ -24,12 +24,12 @@ public class BalanceServiceImpl implements BalanceService {
                 .flatMap(accountDto ->
                         accountDao.update(
                                 accountDto.withBalance(
-                                        AmountDto.Of(amount.amountValue(), amount.currency().value())), id).map(accountDto1 -> accountFromDto(accountDto1)));
+                                        AmountDto.Of(amount.amountValue(), amount.currency().value())), id).map(accountDto1 -> accountFromDto(accountId,accountDto1)));
 
     }
 
-    private Account accountFromDto(AccountDto accountDto) {
-        return new Account(AccountId.Of(accountDto.getId().value()),
+    private Account accountFromDto(AccountId accountId, AccountDto accountDto) {
+        return new Account(accountId,
                 Name.Of(accountDto.getName()),
                 LastName.Of(accountDto.getLastName()),
                 Address.Of(accountDto.getAddress()),

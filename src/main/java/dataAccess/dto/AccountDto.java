@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @EqualsAndHashCode(callSuper = false)
-public class AccountDto extends BaseDto {
+public class AccountDto implements BaseDto {
 
     private final String name;
     private final String lastName;
@@ -14,8 +14,8 @@ public class AccountDto extends BaseDto {
     private final AmountDto balance;
 
 
-    public AccountDto(UUID id, String name, String lastName, String address, AmountDto balance) {
-        super(id);
+    public AccountDto(String name, String lastName, String address, AmountDto balance) {
+
         this.name = name;
         this.lastName = lastName;
         this.address = address;
@@ -23,6 +23,6 @@ public class AccountDto extends BaseDto {
     }
 
     public AccountDto withBalance(AmountDto amountDto) {
-        return new AccountDto(getId(), getName(), getLastName(), getAddress(), amountDto);
+        return new AccountDto(getName(), getLastName(), getAddress(), amountDto);
     }
 }

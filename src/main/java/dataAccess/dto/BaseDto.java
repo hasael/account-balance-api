@@ -1,15 +1,6 @@
 package dataAccess.dto;
 
 
-public abstract class BaseDto {
+public interface BaseDto {
 
-    private final UUID id;
-
-    protected BaseDto(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getId(){
-        return id;
-    }
 }

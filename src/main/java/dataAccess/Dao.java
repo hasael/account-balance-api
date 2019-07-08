@@ -2,6 +2,7 @@ package dataAccess;
 
 import dataAccess.dto.BaseDto;
 import dataAccess.dto.UUID;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,9 +25,10 @@ public class Dao<T extends BaseDto> {
         return value != null ? Optional.of(value) : Optional.empty();
     }
 
-    public T create(T value) {
-        data.put(uidGenerator.generateId(), value);
-        return value;
+    public Pair<UUID, T> create(T value) {
+        UUID id = uidGenerator.generateId();
+        data.put(id, value);
+        return Pair.of(id, value);
     }
 
     public Optional<T> update(T value, UUID uuid) {

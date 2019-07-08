@@ -11,6 +11,7 @@ import domain.abstractions.TransactionService;
 import domain.dataTypes.*;
 import domain.entities.Transaction;
 import domain.entities.TransactionData;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Date;
 import java.util.List;
@@ -32,12 +33,13 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Optional<Transaction> get(TransactionId transactionId) {
-        return transactionDao.read(UUID.Of(transactionId.value())).map(transactionDto -> transactionFromDto(transactionDto));
+        return transactionDao.read(UUID.Of(transactionId.value())).map(transactionDto -> transactionFromDto(transactionId, transactionDto));
     }
 
     @Override
     public Transaction create(TransactionData transactionData) {
-        Transaction transaction = transactionFromDto(transactionDao.create(dtoFromTransaction(transactionData)));
+        Pair<UUID, TransactionDto> created = transactionDao.create(dtoFromTransaction(transactionData));
+        Transaction transaction = transactionFromDto(TransactionId.Of(created.getLeft().value()), created.getRight());
         balanceService.updateAccountBalance(transaction.getSender(), transaction.getAmount().withNegativeAmount())
                 .flatMap(any -> balanceService.updateAccountBalance(transaction.getReceiver(), transaction.getAmount()));
 
@@ -49,8 +51,8 @@ public class TransactionServiceImpl implements TransactionService {
         return null;
     }
 
-    private Transaction transactionFromDto(TransactionDto transactionDto) {
-        return new Transaction(TransactionId.Of(transactionDto.getId().value()),
+    private Transaction transactionFromDto(TransactionId id, TransactionDto transactionDto) {
+        return new Transaction(id,
                 AccountId.Of(transactionDto.getSender().value()),
                 AccountId.Of(transactionDto.getReceiver().value()),
                 Amount.Of(transactionDto.getAmountDto().getMoneyAmount(), Currency.Of(transactionDto.getAmountDto().getCurrency())),
@@ -60,7 +62,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     private TransactionDto dtoFromTransaction(TransactionData transaction) {
         //TODO: valuate adding a dto creation class
-        return new TransactionDto(UUID.empty(),
+        return new TransactionDto(
                 UUID.Of(transaction.getSender().value()),
                 UUID.Of(transaction.getReceiver().value()),
                 AmountDto.Of(transaction.getAmount().amountValue(), transaction.getAmount().currency().value()), new Date());

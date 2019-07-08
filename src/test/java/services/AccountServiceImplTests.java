@@ -7,6 +7,7 @@ import dataAccess.dto.UUID;
 import domain.dataTypes.*;
 import domain.entities.Account;
 import domain.entities.AccountData;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -36,7 +37,7 @@ public class AccountServiceImplTests {
         String currency = "EUR";
 
         AccountServiceImpl sut = new AccountServiceImpl(mockDao);
-        when(mockDao.read(UUID.Of("1"))).thenReturn(Optional.of(new AccountDto(UUID.Of(id), name, lastName, address, new AmountDto(amount, currency))));
+        when(mockDao.read(UUID.Of("1"))).thenReturn(Optional.of(new AccountDto(name, lastName, address, new AmountDto(amount, currency))));
 
         //WHEN
 
@@ -81,10 +82,10 @@ public class AccountServiceImplTests {
         Double amount = 42.0;
         String currency = "EUR";
 
-        AccountDto updateData = new AccountDto(UUID.Of(""), updatedName, lastName, address, AmountDto.empty());
+        AccountDto updateData = new AccountDto(updatedName, lastName, address, AmountDto.empty());
 
         AccountData accountData = new AccountData(Name.Of(updatedName), LastName.Of(lastName), Address.Of(address));
-        when(mockDao.update(updateData, UUID.Of(id))).thenReturn(Optional.of(new AccountDto(UUID.Of(id), updatedName, lastName, address, new AmountDto(amount, currency))));
+        when(mockDao.update(updateData, UUID.Of(id))).thenReturn(Optional.of(new AccountDto(updatedName, lastName, address, new AmountDto(amount, currency))));
 
         //WHEN
 
@@ -112,7 +113,7 @@ public class AccountServiceImplTests {
         String lastName = "lastname";
         String address = "address";
 
-        AccountDto updateData = new AccountDto(UUID.Of(""), updatedName, lastName, address, AmountDto.empty());
+        AccountDto updateData = new AccountDto(updatedName, lastName, address, AmountDto.empty());
 
         when(mockDao.update(updateData, UUID.Of(id))).thenReturn(Optional.empty());
 
@@ -140,7 +141,7 @@ public class AccountServiceImplTests {
         Double amount = 42.0;
         String currency = "EUR";
 
-        when(mockDao.delete(UUID.Of(id))).thenReturn(Optional.of(new AccountDto(UUID.Of(id), name, lastName, address, new AmountDto(amount, currency))));
+        when(mockDao.delete(UUID.Of(id))).thenReturn(Optional.of(new AccountDto(name, lastName, address, new AmountDto(amount, currency))));
 
         //WHEN
 
@@ -189,9 +190,9 @@ public class AccountServiceImplTests {
         String address = "address";
         Double amount = 42.0;
         String currency = "EUR";
-        AccountDto createData = new AccountDto(UUID.Of(""), updatedName, lastName, address, AmountDto.empty());
+        AccountDto createData = new AccountDto(updatedName, lastName, address, AmountDto.empty());
 
-        when(mockDao.create(createData)).thenReturn(new AccountDto(UUID.Of(id), updatedName, lastName, address, new AmountDto(amount, currency)));
+        when(mockDao.create(createData)).thenReturn(Pair.of(UUID.Of("1"), new AccountDto(updatedName, lastName, address, new AmountDto(amount, currency))));
 
         //WHEN
 
