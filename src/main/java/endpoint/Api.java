@@ -17,7 +17,7 @@ import static spark.Spark.*;
 
 public class Api {
 
-    private static Context context = Context.New();
+    public static Context context = Context.New();
 
     public static void main(String[] args) {
 

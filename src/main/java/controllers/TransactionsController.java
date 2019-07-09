@@ -31,13 +31,13 @@ public class TransactionsController {
 
     public Response getTransaction(String transactionId) {
         Optional<Transaction> data = transactionService.get(TransactionId.Of(transactionId));
-        return data.map(transaction -> SuccessResponse(transaction))
+        return data.map(transaction -> SuccessResponse(toJson(transaction)))
                 .orElseGet(() -> InfoResponse("Resource not found"));
     }
 
     public Response createTransaction(TransactionData transactionData) {
         Optional<Transaction> data = transactionService.create(transactionData);
-        return data.map(transaction -> SuccessResponse(transaction))
+        return data.map(transaction -> SuccessResponse(toJson(transaction)))
                 .orElseGet(() -> InfoResponse("Could not create resource"));
     }
 

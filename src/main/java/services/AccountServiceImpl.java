@@ -35,7 +35,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account create(AccountData accountData) {
-        Pair<UUID, AccountDto> created = accountDao.create(dtoFromAccountData(accountData, AmountDto.Of(1.0, accountData.getCurrency().value())));
+        Pair<UUID, AccountDto> created = accountDao.create(dtoFromAccountData(accountData, AmountDto.Of(0.0, accountData.getCurrency().value())));
         return accountFromDto(AccountId.Of(created.getLeft().value()), created.getRight());
     }
 

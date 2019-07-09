@@ -17,6 +17,8 @@ public class Context {
     private TransactionService transactionService;
     private AccountController accountController;
     private TransactionsController transactionsController;
+    private Dao<AccountDto> accountDao;
+    private Dao<TransactionDto> transactionDao;
 
     private void buildServices() {
 
@@ -31,8 +33,8 @@ public class Context {
     private Context() {
         UIDGenerator uidGenerator = new UIDGeneratorImpl();
         ExchangeService exchangeService = new ExchangeServiceImpl();
-        Dao<AccountDto> accountDao = new Dao<>(new HashMap<>(), uidGenerator);
-        Dao<TransactionDto> transactionDao = new Dao<>(new HashMap<>(), uidGenerator);
+        accountDao = new Dao<>(new HashMap<>(), uidGenerator);
+        transactionDao = new Dao<>(new HashMap<>(), uidGenerator);
         BalanceService balanceService = new BalanceServiceImpl(accountDao, exchangeService);
         TimeProvider timeProvider = new TimeProviderImpl();
         accountService = new AccountServiceImpl(accountDao);
@@ -55,5 +57,13 @@ public class Context {
 
     public TransactionService transactionService() {
         return transactionService;
+    }
+
+    public Dao<AccountDto> accountDao(){
+        return accountDao;
+    }
+
+    public Dao<TransactionDto> transactionDao(){
+        return transactionDao;
     }
 }

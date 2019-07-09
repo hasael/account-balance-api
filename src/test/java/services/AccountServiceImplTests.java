@@ -196,7 +196,7 @@ public class AccountServiceImplTests {
         String address = "address";
         Double amount = 42.0;
         String currency = "EUR";
-        AccountDto createData = new AccountDto(updatedName, lastName, address, AmountDto.Of(1.0, currency));
+        AccountDto createData = new AccountDto(updatedName, lastName, address, AmountDto.Of(0.0, currency));
 
         when(mockDao.create(createData)).thenReturn(Pair.of(UUID.Of("1"), new AccountDto(updatedName, lastName, address, new AmountDto(amount, currency))));
 
