@@ -85,8 +85,8 @@ public class TransactionServiceImplTests {
 
         when(timeProvider.now()).thenReturn(now);
 
-        when(balanceService.addAccountBalance(AccountId.Of(senderId), Amount.Of(amount, Currency.Of(currency)).withNegativeAmount())).thenReturn(Optional.of(senderAccount));
-        when(balanceService.addAccountBalance(AccountId.Of(receiverId), Amount.Of(amount, Currency.Of(currency)))).thenReturn(Optional.of(receiverAccount));
+        when(balanceService.addAccountBalance(AccountId.Of(senderId), Amount.Of(amount, Currency.Of(currency)).withNegativeAmount())).thenReturn(true);
+        when(balanceService.addAccountBalance(AccountId.Of(receiverId), Amount.Of(amount, Currency.Of(currency)))).thenReturn(true);
         when(balanceService.verifyBalance(AccountId.Of(senderId), Amount.Of(amount, Currency.Of(currency)))).thenReturn(true);
 
         when(mockDao.create(transactionDto)).thenReturn(Pair.of(UUID.Of(id), transactionDto));

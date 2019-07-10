@@ -19,8 +19,4 @@ public class UUID {
         return uuid;
     }
 
-    //TODO: there should be no need of these
-    public static UUID empty(){
-        return  Of("");
-    }
 }

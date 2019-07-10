@@ -21,9 +21,8 @@ import response.Response;
 import response.StatusResponse;
 import spark.Spark;
 
-import java.util.Optional;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class IntegrationTests {
 
@@ -121,7 +120,7 @@ public class IntegrationTests {
     }
 
     @Test
-    public void addAccountBalance() {
+    public void addAccountBalance() throws InterruptedException {
         String name = "name";
         String lastName = "lastName";
         String address = "address";
@@ -147,6 +146,7 @@ public class IntegrationTests {
         client.request("POST",
                 "/AccountBalance/" + id, gson.toJson(newAmount));
 
+        Thread.sleep(1000);
         AccountDto result = accountDao.read(UUID.Of(id)).get();
 
         assertEquals(name, result.getName());
@@ -208,8 +208,8 @@ public class IntegrationTests {
         ApiResponse tranRes = client.request("POST", "/Transaction", gson.toJson(transactionData));
         Response transactionResponse = gson.fromJson(tranRes.getBody(), Response.class);
         TransactionJson transactionJson = gson.fromJson(transactionResponse.getData(), TransactionJson.class);
-        String transactionId = transactionJson.getId();
 
+        String transactionId = transactionJson.getId();
         AccountDto firstAccount = accountDao.read(UUID.Of(id)).get();
         AccountDto secondAccount = accountDao.read(UUID.Of(id2)).get();
         TransactionDto transactionDto = transactionDao.read(UUID.Of(transactionId)).get();

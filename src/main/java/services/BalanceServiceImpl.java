@@ -6,40 +6,61 @@ import dataAccess.dto.AmountDto;
 import dataAccess.dto.UUID;
 import domain.abstractions.BalanceService;
 import domain.abstractions.ExchangeService;
-import domain.dataTypes.*;
-import domain.entities.Account;
+import domain.dataTypes.AccountId;
+import domain.dataTypes.Amount;
+import domain.dataTypes.Currency;
+import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class BalanceServiceImpl implements BalanceService {
     private final Dao<AccountDto> accountDao;
     private final ExchangeService exchangeService;
+    private BlockingQueue<Pair<AccountId, Amount>> workingQueue;
 
     public BalanceServiceImpl(Dao<AccountDto> accountDao, ExchangeService exchangeService) {
         this.accountDao = accountDao;
         this.exchangeService = exchangeService;
+        workingQueue = new LinkedBlockingQueue<>();
+        startConsumer();
+    }
+
+    private void startConsumer() {
+        final ExecutorService consumers = Executors.newSingleThreadExecutor();
+        consumers.submit(() -> {
+            while (true) {
+                synchronized (workingQueue) {
+                    if (!workingQueue.isEmpty()) {
+                        Pair<AccountId, Amount> result = workingQueue.take();
+                        updateAmount(result.getLeft(), result.getRight());
+                    }
+                }
+            }
+        });
     }
 
     @Override
-    public Optional<Account> updateAccountBalance(AccountId accountId, Amount amount) {
-        UUID id = UUID.Of(accountId.value());
-        return accountDao.read(id)
-                .flatMap(accountDto ->
-                        accountDao.update(
-                                accountDto.withBalance(
-                                        calculateBalance(Currency.Of(accountDto.getBalance().getCurrency()), amount)), id).map(accountDto1 -> accountFromDto(accountId, accountDto1)));
+    public boolean addAccountBalance(AccountId accountId, Amount amount) {
+        try {
 
+            workingQueue.put(Pair.of(accountId, amount));
+
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
-    @Override
-    public Optional<Account> addAccountBalance(AccountId accountId, Amount amount) {
+    private void updateAmount(AccountId accountId, Amount amount) {
         UUID id = UUID.Of(accountId.value());
-        return accountDao.read(id)
+        accountDao.read(id)
                 .flatMap(accountDto ->
                         accountDao.update(
                                 accountDto.withBalance(
-                                        add(accountDto.getBalance(), AmountDto.from(amount))), id).map(accountDto1 -> accountFromDto(accountId, accountDto1)));
-
+                                        add(accountDto.getBalance(), AmountDto.from(amount))), id));
     }
 
     @Override
@@ -60,11 +81,4 @@ public class BalanceServiceImpl implements BalanceService {
         return new AmountDto(first.getMoneyAmount() + newAmount.amountValue(), first.getCurrency());
     }
 
-    private Account accountFromDto(AccountId accountId, AccountDto accountDto) {
-        return new Account(accountId,
-                Name.Of(accountDto.getName()),
-                LastName.Of(accountDto.getLastName()),
-                Address.Of(accountDto.getAddress()),
-                Amount.Of(accountDto.getBalance().getMoneyAmount(), Currency.Of(accountDto.getBalance().getCurrency())));
-    }
 }

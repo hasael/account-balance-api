@@ -10,45 +10,42 @@ import domain.dataTypes.AccountId;
 import domain.dataTypes.Amount;
 import domain.dataTypes.Currency;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.HashMap;
-import java.util.concurrent.CountDownLatch;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 
 public class BalanceServiceImplTests {
 
 
-
     @Test
     public void concurrencyTest() throws InterruptedException {
+        int maxThreads = 10000;
+        Double amount = 50.0;
+        String id = "1";
         AccountDto accountDto = new AccountDto("name", "lastname", "address", AmountDto.Of(0.0, "EUR"));
 
         UIDGenerator uidGenerator = new UIDGeneratorImpl();
         HashMap<UUID, AccountDto> map = new HashMap();
-        map.put(UUID.Of("1"),accountDto);
+        map.put(UUID.Of(id), accountDto);
 
         Dao<AccountDto> accountDtoDao = new Dao<>(map, uidGenerator);
         ExchangeService exchangeService = new ExchangeServiceImpl();
         BalanceServiceImpl sut = new BalanceServiceImpl(accountDtoDao, exchangeService);
 
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-        for (int i = 0; i < 1000; i++) {
-
-            final int number = i;
-
-            new Thread(() -> {
-                sut.addAccountBalance(AccountId.Of("1"), Amount.Of(50.0, Currency.Of("EUR")));
-                countDownLatch.countDown();
-            }).start();
-
+        List<Thread> threads = new CopyOnWriteArrayList<>();
+        for (int i = 0; i < maxThreads; i++) {
+            Thread t = new Thread(() -> sut.addAccountBalance(AccountId.Of(id), Amount.Of(amount, Currency.Of("EUR"))));
+            threads.add(t);
+            t.start();
         }
-        assertTrue(countDownLatch.await(30, SECONDS));
-        assertEquals(50000.0,map.get(UUID.Of("1")).getBalance().getMoneyAmount(),0.0001);
+        while (threads.stream().anyMatch(Thread::isAlive)) {
+            Thread.sleep(1000);
+        }
+        assertEquals(maxThreads * amount, map.get(UUID.Of(id)).getBalance().getMoneyAmount(), 0.0001);
     }
+
 }
