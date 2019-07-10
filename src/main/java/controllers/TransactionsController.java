@@ -7,14 +7,14 @@ import domain.entities.Transaction;
 import domain.entities.TransactionData;
 import endpoint.json.AmountJson;
 import endpoint.json.TransactionJson;
-import response.Response;
+import response.JsonResponse;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static response.Response.InfoResponse;
-import static response.Response.SuccessResponse;
+import static response.JsonResponse.InfoResponse;
+import static response.JsonResponse.SuccessResponse;
 
 public class TransactionsController {
     private final TransactionService transactionService;
@@ -23,19 +23,19 @@ public class TransactionsController {
         this.transactionService = transactionService;
     }
 
-    public Response getAccountTransactions(String accountId, String count) {
+    public JsonResponse getAccountTransactions(String accountId, String count) {
         List<Transaction> transactions = transactionService.getAccountTransactions(AccountId.Of(accountId), Integer.parseInt(count));
         List<TransactionJson> response = transactions.stream().map(transaction -> toJson(transaction)).collect(Collectors.toList());
         return SuccessResponse(response);
     }
 
-    public Response getTransaction(String transactionId) {
+    public JsonResponse getTransaction(String transactionId) {
         Optional<Transaction> data = transactionService.get(TransactionId.Of(transactionId));
         return data.map(transaction -> SuccessResponse(toJson(transaction)))
                 .orElseGet(() -> InfoResponse("Resource not found"));
     }
 
-    public Response createTransaction(TransactionData transactionData) {
+    public JsonResponse createTransaction(TransactionData transactionData) {
         Optional<Transaction> data = transactionService.create(transactionData);
         return data.map(transaction -> SuccessResponse(toJson(transaction)))
                 .orElseGet(() -> InfoResponse("Could not create resource"));

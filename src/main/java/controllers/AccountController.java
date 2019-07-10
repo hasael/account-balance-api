@@ -8,12 +8,12 @@ import domain.entities.Account;
 import domain.entities.AccountData;
 import endpoint.json.AccountJson;
 import endpoint.json.AmountJson;
-import response.Response;
+import response.JsonResponse;
 
 import java.util.Optional;
 
-import static response.Response.InfoResponse;
-import static response.Response.SuccessResponse;
+import static response.JsonResponse.InfoResponse;
+import static response.JsonResponse.SuccessResponse;
 
 public class AccountController {
     private final AccountService accountService;
@@ -25,28 +25,28 @@ public class AccountController {
         this.balanceService = balanceService;
     }
 
-    public Response getAccount(String accountId) {
+    public JsonResponse getAccount(String accountId) {
         Optional<Account> data = accountService.get(AccountId.Of(accountId));
 
         return data.map(account -> SuccessResponse(toJson(account)))
                 .orElseGet(() -> InfoResponse("Resource not found"));
     }
 
-    public Response updateAccount(String accountId, AccountData accountData) {
+    public JsonResponse updateAccount(String accountId, AccountData accountData) {
         accountService.update(AccountId.Of(accountId), accountData);
         return SuccessResponse(accountId + "updated");
     }
 
-    public Response createAccount(AccountData accountData) {
+    public JsonResponse createAccount(AccountData accountData) {
         return SuccessResponse(toJson(accountService.create(accountData)));
     }
 
-    public Response deleteAccount(String accountId) {
+    public JsonResponse deleteAccount(String accountId) {
         accountService.delete(AccountId.Of(accountId));
         return SuccessResponse(accountId + "deleted");
     }
 
-    public Response addBalance(String accountId, Amount amount) {
+    public JsonResponse addBalance(String accountId, Amount amount) {
         balanceService.addAccountBalance(AccountId.Of(accountId), amount);
         return SuccessResponse(accountId + "balance updated");
     }

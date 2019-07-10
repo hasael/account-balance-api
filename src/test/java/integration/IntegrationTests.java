@@ -17,7 +17,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import response.Response;
+import response.JsonResponse;
 import response.StatusResponse;
 import spark.Spark;
 
@@ -75,7 +75,7 @@ public class IntegrationTests {
                 "/Account/" + id);
 
         String rawGetResponse = getRes.getBody();
-        Response getResponse = gson.fromJson(rawGetResponse, Response.class);
+        JsonResponse getResponse = gson.fromJson(rawGetResponse, JsonResponse.class);
         AccountJson getAccountJson = gson.fromJson(getResponse.getData(), AccountJson.class);
 
         assertEquals(getResponse.getStatus(), StatusResponse.SUCCESS);
@@ -105,7 +105,7 @@ public class IntegrationTests {
                 "/Account", accountCreate);
 
         String rawPutResponse = res.getBody();
-        Response putResponse = gson.fromJson(rawPutResponse, Response.class);
+        JsonResponse putResponse = gson.fromJson(rawPutResponse, JsonResponse.class);
         AccountJson accountJson = gson.fromJson(putResponse.getData(), AccountJson.class);
 
         String id = accountJson.getId();
@@ -138,7 +138,7 @@ public class IntegrationTests {
                 "/Account", accountCreate);
 
         String rawPutResponse = res.getBody();
-        Response putResponse = gson.fromJson(rawPutResponse, Response.class);
+        JsonResponse putResponse = gson.fromJson(rawPutResponse, JsonResponse.class);
         AccountJson accountJson = gson.fromJson(putResponse.getData(), AccountJson.class);
 
         String id = accountJson.getId();
@@ -179,7 +179,7 @@ public class IntegrationTests {
                 "/Account", accountCreate);
 
         String rawPutResponse = res.getBody();
-        Response putResponse = gson.fromJson(rawPutResponse, Response.class);
+        JsonResponse putResponse = gson.fromJson(rawPutResponse, JsonResponse.class);
         AccountJson accountJson = gson.fromJson(putResponse.getData(), AccountJson.class);
         String id = accountJson.getId();
 
@@ -193,7 +193,7 @@ public class IntegrationTests {
         ApiResponse res2 = client.request("PUT",
                 "/Account", accountCreate2);
         String rawPutResponse2 = res2.getBody();
-        Response putResponse2 = gson.fromJson(rawPutResponse2, Response.class);
+        JsonResponse putResponse2 = gson.fromJson(rawPutResponse2, JsonResponse.class);
         AccountJson accountJson2 = gson.fromJson(putResponse2.getData(), AccountJson.class);
         String id2 = accountJson2.getId();
 
@@ -206,7 +206,7 @@ public class IntegrationTests {
         TransactionDataJson transactionData = new TransactionDataJson(id, id2, new AmountJson(transactionAmount, "EUR"));
 
         ApiResponse tranRes = client.request("POST", "/Transaction", gson.toJson(transactionData));
-        Response transactionResponse = gson.fromJson(tranRes.getBody(), Response.class);
+        JsonResponse transactionResponse = gson.fromJson(tranRes.getBody(), JsonResponse.class);
         TransactionJson transactionJson = gson.fromJson(transactionResponse.getData(), TransactionJson.class);
 
         String transactionId = transactionJson.getId();
@@ -240,7 +240,7 @@ public class IntegrationTests {
                 "/Account", accountCreate);
 
         String rawPutResponse = res.getBody();
-        Response putResponse = gson.fromJson(rawPutResponse, Response.class);
+        JsonResponse putResponse = gson.fromJson(rawPutResponse, JsonResponse.class);
         AccountJson accountJson = gson.fromJson(putResponse.getData(), AccountJson.class);
 
         assertEquals(putResponse.getStatus(), StatusResponse.SUCCESS);
@@ -252,7 +252,7 @@ public class IntegrationTests {
                 "/Account/" + id);
 
         String rawGetResponse = getRes.getBody();
-        Response getResponse = gson.fromJson(rawGetResponse, Response.class);
+        JsonResponse getResponse = gson.fromJson(rawGetResponse, JsonResponse.class);
         AccountJson getAccountJson = gson.fromJson(getResponse.getData(), AccountJson.class);
 
         assertEquals(getResponse.getStatus(), StatusResponse.SUCCESS);
@@ -270,7 +270,7 @@ public class IntegrationTests {
                 "/Account/" + id, accountUpdate);
 
         String rawPostResponse = postRes.getBody();
-        Response postResponse = gson.fromJson(rawPostResponse, Response.class);
+        JsonResponse postResponse = gson.fromJson(rawPostResponse, JsonResponse.class);
 
         assertEquals(postResponse.getStatus(), StatusResponse.SUCCESS);
 
@@ -278,7 +278,7 @@ public class IntegrationTests {
                 "/Account/" + id);
 
         String rawGetResponse2 = getRes2.getBody();
-        Response getResponse2 = gson.fromJson(rawGetResponse2, Response.class);
+        JsonResponse getResponse2 = gson.fromJson(rawGetResponse2, JsonResponse.class);
         AccountJson getAccountJson2 = gson.fromJson(getResponse2.getData(), AccountJson.class);
 
         assertEquals(getResponse2.getStatus(), StatusResponse.SUCCESS);

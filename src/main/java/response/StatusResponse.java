@@ -11,5 +11,4 @@ public enum StatusResponse {
     StatusResponse(String status){
         this.status = status;
     }
-    // constructors, getters
 }

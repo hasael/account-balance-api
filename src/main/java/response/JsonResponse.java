@@ -10,24 +10,24 @@ import java.util.Map;
 
 @Getter
 @EqualsAndHashCode
-public class Response {
+public class JsonResponse {
 
     private final StatusResponse status;
     private final JsonElement data;
 
-    private Response(StatusResponse status, JsonElement data) {
+    private JsonResponse(StatusResponse status, JsonElement data) {
         this.status = status;
         this.data = data;
     }
 
-    public static Response SuccessResponse(Object data) {
-        return new Response(StatusResponse.SUCCESS, toJson(data));
+    public static JsonResponse SuccessResponse(Object data) {
+        return new JsonResponse(StatusResponse.SUCCESS, toJson(data));
     }
 
-    public static Response InfoResponse(String message) {
+    public static JsonResponse InfoResponse(String message) {
         Map<String, Object> jsonMap = new HashMap<>();
         jsonMap.put("message", message);
-        return new Response(StatusResponse.SUCCESS, toJson(jsonMap));
+        return new JsonResponse(StatusResponse.SUCCESS, toJson(jsonMap));
     }
 
     private static JsonElement toJson(Object obj) {
