@@ -34,3 +34,8 @@ DAO layer is a generic persistence layer that CRUDs data on a in-memory Dictiona
 
  A concurrency logic is added on BalanceService implementation, which is a high traffic method.
  All the calls will be passed to a BlockingQueue which will be consumed from a different thred that will update the account balance.
+ 
+ Further improvements
+ - More unit test coverage
+ - Use Dozer to map Json models -> Domain entities -> Dto models
+ - Concurrency management to other calls
