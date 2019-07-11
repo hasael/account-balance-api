@@ -8,6 +8,7 @@ Domain is composed of
 Models:
 - Account
 - Transaction
+
 Services:
 - AccountService -> CRUD account data
 - TransactionService -> Get or Create a transaction between accounts
