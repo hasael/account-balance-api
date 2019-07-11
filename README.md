@@ -26,8 +26,11 @@ With their respective types for each value
  - TransactionJson
 
  
- DataAccess is implemented in memory using a Hashmap, that saves DTO objects.
- The DTOs represent the domain data persisted on the repository.
- 
+ DataAccess is implemented in memory using DAO objects, that saves DTO objects.
+ - AccountDto
+ - TransactionDto
+  The DTOs represent the domain data persisted on the repository.
+DAO layer is a generic persistence layer that CRUDs data on a in-memory Dictionary.
+
  A concurrency logic is added on BalanceService implementation, which is a high traffic method.
  All the calls will be passed to a BlockingQueue which will be consumed from a different thred that will update the account balance.
