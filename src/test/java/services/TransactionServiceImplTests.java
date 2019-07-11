@@ -10,6 +10,8 @@ import domain.dataTypes.*;
 import domain.entities.Account;
 import domain.entities.Transaction;
 import domain.entities.TransactionData;
+import domain.responses.Response;
+import domain.responses.Success;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,15 +49,15 @@ public class TransactionServiceImplTests {
 
 
         when(timeProvider.now()).thenReturn(now);
-        when(mockDao.read(UUID.Of(id))).thenReturn(Optional.of(new TransactionDto(UUID.Of(senderId), UUID.Of(receiverId), AmountDto.Of(amount, currency), now)));
+        when(mockDao.read(UUID.Of(id))).thenReturn(Success.Of(new TransactionDto(UUID.Of(senderId), UUID.Of(receiverId), AmountDto.Of(amount, currency), now)));
 
         //WHEN
 
-        Optional<Transaction> actual = sut.get(TransactionId.Of(id));
+        Response<Transaction> actual = sut.get(TransactionId.Of(id));
 
         //THEN
 
-        Optional<Transaction> expected = Optional.of(
+        Response<Transaction> expected = Success.Of(
                 new Transaction(TransactionId.Of(id),
                         AccountId.Of(senderId),
                         AccountId.Of(receiverId),
@@ -85,19 +87,19 @@ public class TransactionServiceImplTests {
 
         when(timeProvider.now()).thenReturn(now);
 
-        when(balanceService.addAccountBalance(AccountId.Of(senderId), Amount.Of(amount, Currency.Of(currency)).withNegativeAmount())).thenReturn(true);
-        when(balanceService.addAccountBalance(AccountId.Of(receiverId), Amount.Of(amount, Currency.Of(currency)))).thenReturn(true);
+        when(balanceService.addAccountBalance(senderAccount.getAccountId(), Amount.Of(amount, Currency.Of(currency)).withNegativeAmount())).thenReturn(Success.Of(senderAccount.getBalance()));
+        when(balanceService.addAccountBalance(receiverAccount.getAccountId(), Amount.Of(amount, Currency.Of(currency)))).thenReturn(Success.Of(receiverAccount.getBalance()));
         when(balanceService.verifyBalance(AccountId.Of(senderId), Amount.Of(amount, Currency.Of(currency)))).thenReturn(true);
 
-        when(mockDao.create(transactionDto)).thenReturn(Pair.of(UUID.Of(id), transactionDto));
+        when(mockDao.create(transactionDto)).thenReturn(Success.Of(Pair.of(UUID.Of(id), transactionDto)));
 
         //WHEN
 
-        Optional<Transaction> actual = sut.create(transactionData);
+        Response<Transaction> actual = sut.create(transactionData);
 
         //THEN
 
-        Optional<Transaction> expected = Optional.of(new Transaction(TransactionId.Of(id),
+        Response<Transaction> expected = Success.Of(new Transaction(TransactionId.Of(id),
                 AccountId.Of(senderId),
                 AccountId.Of(receiverId),
                 Amount.Of(amount, Currency.Of(currency)),

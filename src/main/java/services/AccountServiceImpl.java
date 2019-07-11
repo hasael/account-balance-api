@@ -8,9 +8,7 @@ import domain.abstractions.AccountService;
 import domain.dataTypes.*;
 import domain.entities.Account;
 import domain.entities.AccountData;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.Optional;
+import domain.responses.Response;
 
 public class AccountServiceImpl implements AccountService {
 
@@ -21,12 +19,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Optional<Account> get(AccountId accountId) {
+    public Response<Account> get(AccountId accountId) {
         return accountDao.read(UUID.Of(accountId.value())).map(accountDto -> accountFromDto(accountId, accountDto));
     }
 
     @Override
-    public Optional<Account> update(AccountId accountId, AccountData accountData) {
+    public Response<Account> update(AccountId accountId, AccountData accountData) {
         UUID id = UUID.Of(accountId.value());
         return accountDao.read(id)
                 .flatMap(accountDto -> accountDao.update(dtoFromAccountData(accountData, accountDto.getBalance()), id)
@@ -34,13 +32,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account create(AccountData accountData) {
-        Pair<UUID, AccountDto> created = accountDao.create(dtoFromAccountData(accountData, AmountDto.Of(0.0, accountData.getCurrency().value())));
-        return accountFromDto(AccountId.Of(created.getLeft().value()), created.getRight());
+    public Response<Account> create(AccountData accountData) {
+        return accountDao.create(dtoFromAccountData(accountData, AmountDto.Of(0.0, accountData.getCurrency().value())))
+                .map(uuidAccountDtoPair -> accountFromDto(AccountId.Of(uuidAccountDtoPair.getLeft().value()), uuidAccountDtoPair.getRight()));
     }
 
     @Override
-    public Optional<Account> delete(AccountId accountId) {
+    public Response<Account> delete(AccountId accountId) {
         return accountDao.delete(UUID.Of(accountId.value())).map(accountDto -> accountFromDto(accountId, accountDto));
     }
 

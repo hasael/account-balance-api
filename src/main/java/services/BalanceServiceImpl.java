@@ -9,6 +9,9 @@ import domain.abstractions.ExchangeService;
 import domain.dataTypes.AccountId;
 import domain.dataTypes.Amount;
 import domain.dataTypes.Currency;
+import domain.responses.ErrorResponse;
+import domain.responses.Response;
+import domain.responses.Success;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.concurrent.BlockingQueue;
@@ -43,15 +46,15 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     @Override
-    public boolean addAccountBalance(AccountId accountId, Amount amount) {
+    public Response<Amount> addAccountBalance(AccountId accountId, Amount amount) {
         try {
 
             workingQueue.put(Pair.of(accountId, amount));
 
         } catch (Exception e) {
-            return false;
+            return ErrorResponse.Of(e);
         }
-        return true;
+        return Success.Of(amount);
     }
 
     private void updateAmount(AccountId accountId, Amount amount) {
@@ -68,7 +71,9 @@ public class BalanceServiceImpl implements BalanceService {
         UUID id = UUID.Of(accountId.value());
         return accountDao.read(id).map(accountDto ->
                 accountDto.getBalance().getMoneyAmount() >= calculateBalance(Currency.Of(accountDto.getBalance().getCurrency()), amount).getMoneyAmount())
-                .orElse(false);
+                .fold(success -> true,
+                        errorResponse -> false,
+                        notFound -> false);
     }
 
     private AmountDto calculateBalance(Currency newCurrency, Amount amount) {

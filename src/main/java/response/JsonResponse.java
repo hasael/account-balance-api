@@ -30,6 +30,12 @@ public class JsonResponse {
         return new JsonResponse(StatusResponse.SUCCESS, toJson(jsonMap));
     }
 
+    public static JsonResponse ErrorResponse(Throwable throwable) {
+        Map<String, Object> jsonMap = new HashMap<>();
+        jsonMap.put("message", throwable.getMessage());
+        return new JsonResponse(StatusResponse.ERROR, toJson(jsonMap));
+    }
+
     private static JsonElement toJson(Object obj) {
         return new Gson().toJsonTree(obj);
     }

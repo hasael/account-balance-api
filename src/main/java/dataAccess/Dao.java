@@ -2,13 +2,16 @@ package dataAccess;
 
 import dataAccess.dto.BaseDto;
 import dataAccess.dto.UUID;
+import domain.responses.ErrorResponse;
+import domain.responses.Response;
+import domain.responses.Success;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static domain.responses.NotFound.notFound;
 
 public class Dao<T extends BaseDto> {
 
@@ -20,28 +23,48 @@ public class Dao<T extends BaseDto> {
         this.uidGenerator = uidGenerator;
     }
 
-    public Optional<T> read(UUID uuid) {
-        T value = data.getOrDefault(uuid, null);
-        return value != null ? Optional.of(value) : Optional.empty();
+    public Response<T> read(UUID uuid) {
+        try {
+            T value = data.getOrDefault(uuid, null);
+            return value != null ? Success.Of(value) : notFound();
+        } catch (Exception ex) {
+            return ErrorResponse.Of(ex);
+        }
     }
 
-    public Pair<UUID, T> create(T value) {
-        UUID id = uidGenerator.generateId();
-        data.put(id, value);
-        return Pair.of(id, value);
+    public Response<Pair<UUID, T>> create(T value) {
+        try {
+            UUID id = uidGenerator.generateId();
+            data.put(id, value);
+            return Success.Of(Pair.of(id, value));
+        } catch (Exception ex) {
+            return ErrorResponse.Of(ex);
+        }
     }
 
-    public Optional<T> update(T value, UUID uuid) {
-        T replaced = data.replace(uuid, value);
-        return replaced != null ? Optional.of(replaced) : Optional.empty();
+    public Response<T> update(T value, UUID uuid) {
+        try {
+            T replaced = data.replace(uuid, value);
+            return replaced != null ? Success.Of(replaced) : notFound();
+        } catch (Exception ex) {
+            return ErrorResponse.Of(ex);
+        }
     }
 
-    public Optional<T> delete(UUID uuid) {
-        T removed = data.remove(uuid);
-        return removed != null ? Optional.of(removed) : Optional.empty();
+    public Response<T> delete(UUID uuid) {
+        try {
+            T removed = data.remove(uuid);
+            return removed != null ? Success.Of(removed) : notFound();
+        } catch (Exception ex) {
+            return ErrorResponse.Of(ex);
+        }
     }
 
-    public List<T> query(Predicate<T> predicate) {
-        return data.values().stream().filter(predicate).collect(Collectors.toList());
+    public Response<T> query(Predicate<T> predicate) {
+        try {
+            return Success.Of(data.values().stream().filter(predicate).collect(Collectors.toList()));
+        } catch (Exception ex) {
+            return ErrorResponse.Of(ex);
+        }
     }
 }

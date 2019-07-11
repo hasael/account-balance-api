@@ -6,14 +6,14 @@ import domain.dataTypes.AccountId;
 import domain.dataTypes.Amount;
 import domain.entities.Account;
 import domain.entities.AccountData;
+import domain.responses.Response;
 import endpoint.json.AccountJson;
 import endpoint.json.AmountJson;
 import response.JsonResponse;
 
 import java.util.Optional;
 
-import static response.JsonResponse.InfoResponse;
-import static response.JsonResponse.SuccessResponse;
+import static response.JsonResponse.*;
 
 public class AccountController {
     private final AccountService accountService;
@@ -26,29 +26,39 @@ public class AccountController {
     }
 
     public JsonResponse getAccount(String accountId) {
-        Optional<Account> data = accountService.get(AccountId.Of(accountId));
+        Response<Account> data = accountService.get(AccountId.Of(accountId));
 
-        return data.map(account -> SuccessResponse(toJson(account)))
-                .orElseGet(() -> InfoResponse("Resource not found"));
+        return data.fold(success -> SuccessResponse(toJson(success.getValue())),
+                errorResponse -> ErrorResponse(errorResponse.getThrowable()),
+                notFound -> InfoResponse("Resource not found"));
     }
 
     public JsonResponse updateAccount(String accountId, AccountData accountData) {
-        accountService.update(AccountId.Of(accountId), accountData);
-        return SuccessResponse(accountId + "updated");
+        return accountService.update(AccountId.Of(accountId), accountData)
+                .fold(accountSuccess -> SuccessResponse(toJson(accountSuccess.getValue())),
+                        errorResponse -> ErrorResponse(errorResponse.getThrowable()),
+                        notFound -> InfoResponse("Resource not found"));
     }
 
     public JsonResponse createAccount(AccountData accountData) {
-        return SuccessResponse(toJson(accountService.create(accountData)));
+        return accountService.create(accountData)
+                .fold(accountSuccess -> SuccessResponse(toJson(accountSuccess.getValue())),
+                        errorResponse -> ErrorResponse(errorResponse.getThrowable()),
+                        notFound -> InfoResponse("Resource not found"));
     }
 
     public JsonResponse deleteAccount(String accountId) {
-        accountService.delete(AccountId.Of(accountId));
-        return SuccessResponse(accountId + "deleted");
+        return accountService.delete(AccountId.Of(accountId))
+                .fold(accountSuccess -> SuccessResponse(toJson(accountSuccess.getValue())),
+                        errorResponse -> ErrorResponse(errorResponse.getThrowable()),
+                        notFound -> InfoResponse("Resource not found"));
     }
 
     public JsonResponse addBalance(String accountId, Amount amount) {
-        balanceService.addAccountBalance(AccountId.Of(accountId), amount);
-        return SuccessResponse(accountId + "balance updated");
+        return balanceService.addAccountBalance(AccountId.Of(accountId), amount)
+                .fold(accountSuccess -> SuccessResponse(toJson(accountSuccess.getValue())),
+                        errorResponse -> ErrorResponse(errorResponse.getThrowable()),
+                        notFound -> InfoResponse("Resource not found"));
     }
 
     private static AccountJson toJson(Account account) {
@@ -56,5 +66,7 @@ public class AccountController {
                 account.getAddress().value(), new AmountJson(account.getBalance().amountValue(), account.getBalance().currency().value()));
 
     }
-
+    private static AmountJson toJson(Amount amount) {
+        return new AmountJson(amount.amountValue(),amount.currency().value());
+    }
 }

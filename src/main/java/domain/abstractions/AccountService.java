@@ -3,16 +3,17 @@ package domain.abstractions;
 import domain.dataTypes.AccountId;
 import domain.entities.Account;
 import domain.entities.AccountData;
+import domain.responses.Response;
 
 import java.util.Optional;
 
 public interface AccountService {
 
-    Optional<Account> get(AccountId accountId);
+    Response<Account> get(AccountId accountId);
 
-    Optional<Account> update(AccountId accountId, AccountData accountData);
+    Response<Account> update(AccountId accountId, AccountData accountData);
 
-    Account create(AccountData accountData);
+    Response<Account> create(AccountData accountData);
 
-    Optional<Account> delete(AccountId accountId);
+    Response<Account> delete(AccountId accountId);
 }

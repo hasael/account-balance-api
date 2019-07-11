@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static response.JsonResponse.InfoResponse;
-import static response.JsonResponse.SuccessResponse;
+import static response.JsonResponse.*;
 
 public class TransactionsController {
     private final TransactionService transactionService;
@@ -24,21 +23,26 @@ public class TransactionsController {
     }
 
     public JsonResponse getAccountTransactions(String accountId, String count) {
-        List<Transaction> transactions = transactionService.getAccountTransactions(AccountId.Of(accountId), Integer.parseInt(count));
-        List<TransactionJson> response = transactions.stream().map(transaction -> toJson(transaction)).collect(Collectors.toList());
-        return SuccessResponse(response);
+        return transactionService.getAccountTransactions(AccountId.Of(accountId), Integer.parseInt(count))
+                .fold(listSuccess -> {
+                            List<TransactionJson> response = listSuccess.getValue().stream().map(transaction -> toJson(transaction)).collect(Collectors.toList());
+                            return SuccessResponse(response);
+                        }, errorResponse -> ErrorResponse(errorResponse.getThrowable()),
+                        notFound -> InfoResponse("Resource not found"));
     }
 
     public JsonResponse getTransaction(String transactionId) {
-        Optional<Transaction> data = transactionService.get(TransactionId.Of(transactionId));
-        return data.map(transaction -> SuccessResponse(toJson(transaction)))
-                .orElseGet(() -> InfoResponse("Resource not found"));
+        return transactionService.get(TransactionId.Of(transactionId))
+                .fold(transactionSuccess -> SuccessResponse(toJson(transactionSuccess.getValue())),
+                        errorResponse -> ErrorResponse(errorResponse.getThrowable()),
+                        notFound -> InfoResponse("Resource not found"));
     }
 
     public JsonResponse createTransaction(TransactionData transactionData) {
-        Optional<Transaction> data = transactionService.create(transactionData);
-        return data.map(transaction -> SuccessResponse(toJson(transaction)))
-                .orElseGet(() -> InfoResponse("Could not create resource"));
+        return transactionService.create(transactionData)
+                .fold(transactionSuccess -> SuccessResponse(toJson(transactionSuccess.getValue())),
+                        errorResponse -> ErrorResponse(errorResponse.getThrowable()),
+                        notFound -> InfoResponse("Resource not found"));
     }
 
     private static TransactionJson toJson(Transaction transaction) {

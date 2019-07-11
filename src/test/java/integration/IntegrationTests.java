@@ -7,6 +7,8 @@ import dataAccess.dto.AmountDto;
 import dataAccess.dto.TransactionDto;
 import dataAccess.dto.UUID;
 import di.Context;
+import domain.responses.Response;
+import domain.responses.Success;
 import endpoint.Api;
 import endpoint.json.AccountJson;
 import endpoint.json.AmountJson;
@@ -68,8 +70,11 @@ public class IntegrationTests {
         String address = "address";
         AmountDto amountDto = AmountDto.Of(10, "EUR");
         Dao<AccountDto> accountDao = context.accountDao();
-        Pair<UUID, AccountDto> result = accountDao.create(new AccountDto(name, lastName, address, amountDto));
-        String id = result.getLeft().value();
+        Response<Pair<UUID, AccountDto>> result = accountDao.create(new AccountDto(name, lastName, address, amountDto));
+
+        String id = result.fold(pairSuccess -> pairSuccess.getValue().getLeft().value(),
+                errorResponse -> "",
+                notFound -> "");
 
         ApiResponse getRes = client.request("GET",
                 "/Account/" + id);
@@ -110,7 +115,10 @@ public class IntegrationTests {
 
         String id = accountJson.getId();
 
-        AccountDto result = accountDao.read(UUID.Of(id)).get();
+        AccountDto result = accountDao.read(UUID.Of(id))
+                .fold(Success::getValue,
+                        errorResponse -> null,
+                        notFound -> null);
 
         assertEquals(name, result.getName());
         assertEquals(lastName, result.getLastName());
@@ -147,7 +155,9 @@ public class IntegrationTests {
                 "/AccountBalance/" + id, gson.toJson(newAmount));
 
         Thread.sleep(1000);
-        AccountDto result = accountDao.read(UUID.Of(id)).get();
+        AccountDto result = accountDao.read(UUID.Of(id)).fold(Success::getValue,
+                errorResponse -> null,
+                notFound -> null);
 
         assertEquals(name, result.getName());
         assertEquals(lastName, result.getLastName());
@@ -210,9 +220,15 @@ public class IntegrationTests {
         TransactionJson transactionJson = gson.fromJson(transactionResponse.getData(), TransactionJson.class);
 
         String transactionId = transactionJson.getId();
-        AccountDto firstAccount = accountDao.read(UUID.Of(id)).get();
-        AccountDto secondAccount = accountDao.read(UUID.Of(id2)).get();
-        TransactionDto transactionDto = transactionDao.read(UUID.Of(transactionId)).get();
+        AccountDto firstAccount = accountDao.read(UUID.Of(id)).fold(Success::getValue,
+                errorResponse -> null,
+                notFound -> null);
+        AccountDto secondAccount = accountDao.read(UUID.Of(id2)).fold(Success::getValue,
+                errorResponse -> null,
+                notFound -> null);
+        TransactionDto transactionDto = transactionDao.read(UUID.Of(transactionId)).fold(Success::getValue,
+                errorResponse -> null,
+                notFound -> null);
 
         assertEquals(amountDto.getCurrency(), firstAccount.getBalance().getCurrency());
         assertEquals(firstAccountAmount - transactionAmount, firstAccount.getBalance().getMoneyAmount(), 0.00001);

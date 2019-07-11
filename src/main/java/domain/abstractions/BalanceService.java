@@ -2,11 +2,9 @@ package domain.abstractions;
 
 import domain.dataTypes.AccountId;
 import domain.dataTypes.Amount;
-import domain.entities.Account;
-
-import java.util.Optional;
+import domain.responses.Response;
 
 public interface BalanceService {
     boolean verifyBalance(AccountId accountId,Amount amount);
-    boolean addAccountBalance(AccountId accountId, Amount amount);
+    Response<Amount> addAccountBalance(AccountId accountId, Amount amount);
 }

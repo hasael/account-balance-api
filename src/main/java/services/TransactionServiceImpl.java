@@ -10,10 +10,11 @@ import domain.abstractions.TransactionService;
 import domain.dataTypes.*;
 import domain.entities.Transaction;
 import domain.entities.TransactionData;
-import org.apache.commons.lang3.tuple.Pair;
+import domain.responses.Response;
 
 import java.util.List;
-import java.util.Optional;
+
+import static domain.responses.NotFound.notFound;
 
 public class TransactionServiceImpl implements TransactionService {
 
@@ -28,28 +29,28 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Optional<Transaction> get(TransactionId transactionId) {
+    public Response<Transaction> get(TransactionId transactionId) {
         return transactionDao.read(UUID.Of(transactionId.value())).map(transactionDto -> transactionFromDto(transactionId, transactionDto));
     }
 
     @Override
-    public Optional<Transaction> create(TransactionData transactionData) {
+    public Response<Transaction> create(TransactionData transactionData) {
 
         if (balanceService.verifyBalance(transactionData.getSender(), transactionData.getAmount())) {
-            Pair<UUID, TransactionDto> created = transactionDao.create(dtoFromTransaction(transactionData));
-            Transaction transaction = transactionFromDto(TransactionId.Of(created.getLeft().value()), created.getRight());
+            Response<Transaction> transactionResponse = transactionDao.create(dtoFromTransaction(transactionData))
+                    .map(created -> transactionFromDto(TransactionId.Of(created.getLeft().value()), created.getRight()));
 
-            if (balanceService.addAccountBalance(transaction.getSender(), transaction.getAmount().withNegativeAmount())) {
-                balanceService.addAccountBalance(transaction.getReceiver(), transaction.getAmount());
-            }
+            return transactionResponse
+                    .flatMap(transaction -> balanceService.addAccountBalance(transaction.getSender(), transaction.getAmount().withNegativeAmount())
+                            .flatMap(amount -> balanceService.addAccountBalance(transaction.getReceiver(), transaction.getAmount())))
+                    .flatMap(amount -> transactionResponse);
 
-            return Optional.of(transaction);
         } else
-            return Optional.empty();
+            return notFound();
     }
 
     @Override
-    public List<Transaction> getAccountTransactions(AccountId accountId, int count) {
+    public Response<List<Transaction>> getAccountTransactions(AccountId accountId, int count) {
         return null;
     }
 
@@ -63,7 +64,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private TransactionDto dtoFromTransaction(TransactionData transaction) {
-        //TODO: valuate adding a dto creation class
         return new TransactionDto(
                 UUID.Of(transaction.getSender().value()),
                 UUID.Of(transaction.getReceiver().value()),

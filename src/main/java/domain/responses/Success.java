@@ -1,6 +1,11 @@
 package domain.responses;
 
-public class Success<T> extends Response {
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
+@EqualsAndHashCode(callSuper = false)
+@Getter
+public class Success<T> extends Response<T> {
     private final T value;
 
     private Success(T value) {
@@ -11,7 +16,4 @@ public class Success<T> extends Response {
         return new Success<>(v);
     }
 
-    public T getValue() {
-        return value;
-    }
 }
